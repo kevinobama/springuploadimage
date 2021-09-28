@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kevingates.uploadimage.mappers.DevicesMapper">
+
+    <resultMap type="Devices" id="DevicesResult">
+        <result property="id"    column="id"    />
+        <result property="deviceIdentificationCode"    column="device_identification_code"    />
+        <result property="address"    column="address"    />
+        <result property="liquidLevel"    column="liquid_level"    />
+        <result property="communityName"    column="community_name"    />
+        <result property="street"    column="street"    />
+        <result property="drainageSystem"    column="drainage_system"    />
+        <result property="status"    column="status"    />
+        <result property="organizationId"    column="organization_id"    />
+        <result property="organizationName"    column="organization_name"    />
+        <result property="mapAddress"    column="map_address"    />
+        <result property="liquidAlarmLevel"    column="liquid_alarm_level"    />
+        <result property="liquidStatus"    column="liquid_status"    />
+        <result property="ctwingDeviceId"    column="ctwing_device_id"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectDevicesVo">
+        select id, device_identification_code, address, liquid_level, community_name, street, drainage_system, status, organization_id, organization_name, map_address, liquid_alarm_level, liquid_status, ctwing_device_id, created_at, updated_at from devices
+    </sql>
+
+    <sql id="orderBy">
+        <if test="orderBy != null and orderBy.size() > 0">
+            order by
+            <foreach collection="orderBy.entrySet()" index="key" item="value" separator=",">
+                ${key} ${value}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="selectDevicesList" parameterType="Devices" resultMap="DevicesResult">
+        <include refid="selectDevicesVo"/>
+        <where>
+            <if test="deviceIdentificationCode != null  and deviceIdentificationCode != ''"> and device_identification_code = #{deviceIdentificationCode}</if>
+            <if test="address != null  and address != ''">and address like concat('%', #{address}, '%')</if>
+            <if test="liquidLevel != null and liquidLevel != '0.0' "> and liquid_level = #{liquidLevel}</if>
+            <if test="communityName != null  and communityName != ''"> and community_name like concat('%', #{communityName}, '%')</if>
+            <if test="street != null  and street != ''"> and street = #{street}</if>
+            <if test="drainageSystem != null  and drainageSystem != ''"> and drainage_system = #{drainageSystem}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="organizationId != null "> and organization_id = #{organizationId}</if>
+            <if test="organizationName != null  and organizationName != ''"> and organization_name like concat('%', #{organizationName}, '%')</if>
+            <if test="mapAddress != null  and mapAddress != ''"> and map_address = #{mapAddress}</if>
+            <!--            <if test="liquidAlarmLevel != null "> and liquid_alarm_level = #{liquidAlarmLevel}</if>-->
+            <if test="liquidStatus != null  and liquidStatus != ''"> and liquid_status = #{liquidStatus}</if>
+            <if test="ctwingDeviceId != null  and ctwingDeviceId != ''"> and ctwing_device_id = #{ctwingDeviceId}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+            <if test="updatedAt != null "> and updated_at = #{updatedAt}</if>
+        </where>
+        <include refid="orderBy"></include>
+    </select>
+
+    <select id="selectDeviceStreets" resultType="String">
+        select distinct street  from devices
+    </select>
+
+    <select id="selectDevicesById" parameterType="Long" resultMap="DevicesResult">
+        <include refid="selectDevicesVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectDevicesByDeviceIdentificationCode" parameterType="String" resultMap="DevicesResult">
+        <include refid="selectDevicesVo"/>
+        where device_identification_code = #{deviceIdentificationCode}
+    </select>
+
+
+    <insert id="insertDevices" parameterType="Devices" useGeneratedKeys="true" keyProperty="id">
+        insert into devices
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentificationCode != null">device_identification_code,</if>
+            <if test="address != null">address,</if>
+            <if test="liquidLevel != null">liquid_level,</if>
+            <if test="communityName != null">community_name,</if>
+            <if test="street != null">street,</if>
+            <if test="drainageSystem != null">drainage_system,</if>
+            <if test="status != null">status,</if>
+            <if test="organizationId != null">organization_id,</if>
+            <if test="organizationName != null">organization_name,</if>
+            <if test="mapAddress != null">map_address,</if>
+            <if test="liquidAlarmLevel != null">liquid_alarm_level,</if>
+            <if test="liquidStatus != null">liquid_status,</if>
+            <if test="ctwingDeviceId != null">ctwing_device_id,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentificationCode != null">#{deviceIdentificationCode},</if>
+            <if test="address != null">#{address},</if>
+            <if test="liquidLevel != null">#{liquidLevel},</if>
+            <if test="communityName != null">#{communityName},</if>
+            <if test="street != null">#{street},</if>
+            <if test="drainageSystem != null">#{drainageSystem},</if>
+            <if test="status != null">#{status},</if>
+            <if test="organizationId != null">#{organizationId},</if>
+            <if test="organizationName != null">#{organizationName},</if>
+            <if test="mapAddress != null">#{mapAddress},</if>
+            <if test="liquidAlarmLevel != null">#{liquidAlarmLevel},</if>
+            <if test="liquidStatus != null">#{liquidStatus},</if>
+            <if test="ctwingDeviceId != null">#{ctwingDeviceId},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDevices" parameterType="Devices">
+        update devices
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceIdentificationCode != null">device_identification_code = #{deviceIdentificationCode},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="liquidLevel != null">liquid_level = #{liquidLevel},</if>
+            <if test="communityName != null">community_name = #{communityName},</if>
+            <if test="street != null">street = #{street},</if>
+            <if test="drainageSystem != null">drainage_system = #{drainageSystem},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="organizationId != null">organization_id = #{organizationId},</if>
+            <if test="organizationName != null">organization_name = #{organizationName},</if>
+            <if test="mapAddress != null">map_address = #{mapAddress},</if>
+            <if test="liquidAlarmLevel != null">liquid_alarm_level = #{liquidAlarmLevel}*10,</if>
+            <if test="liquidStatus != null">liquid_status = #{liquidStatus},</if>
+            <if test="ctwingDeviceId != null">ctwing_device_id = #{ctwingDeviceId},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDevicesById" parameterType="Long">
+        delete from devices where id = #{id}
+    </delete>
+
+    <delete id="deleteDevicesByIds" parameterType="String">
+        delete from devices where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
